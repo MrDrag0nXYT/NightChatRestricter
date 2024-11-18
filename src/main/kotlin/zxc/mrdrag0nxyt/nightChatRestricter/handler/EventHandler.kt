@@ -8,14 +8,12 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import zxc.mrdrag0nxyt.nightChatRestricter.NightChatRestricter
 import zxc.mrdrag0nxyt.nightChatRestricter.config.Config
-import zxc.mrdrag0nxyt.nightChatRestricter.database.DatabaseManager
-import zxc.mrdrag0nxyt.nightChatRestricter.util.formatTime
+import zxc.mrdrag0nxyt.nightChatRestricter.util.formatPlayedAndTotalTime
 import zxc.mrdrag0nxyt.nightChatRestricter.util.sendColoredMessageWithPlaceholders
 
 class EventHandler(
     private val plugin: NightChatRestricter,
-    private val config: Config,
-    private val databaseManager: DatabaseManager
+    private val config: Config
 ) : Listener {
 
     @EventHandler
@@ -24,33 +22,12 @@ class EventHandler(
 
         val player = event.player
         val playerName = player.name
-        val playedTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
-        var needTime: Long? = null
+        val playedTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20
+        val needTime = yamlConfiguration.getInt("need-time", 600)
 
-        val databaseWorker = databaseManager.databaseWorker
-        try {
-            needTime = databaseManager.getConnection()?.use { connection ->
-                databaseWorker?.getNeedPlayedTime(connection, playerName)
-            }
+        NightChatRestricter.needPlayedTime[playerName] = needTime
 
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        if (needTime == null) {
-            needTime = yamlConfiguration.getLong("need-time", 600)
-            NightChatRestricter.needPlayedTime[playerName] = needTime
-
-            try {
-                databaseManager.getConnection()?.use { connection ->
-                    databaseWorker?.addPlayer(connection, playerName, needTime)
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-        } else if (playedTime < needTime) {
+        if (playedTime < needTime) {
             NightChatRestricter.needPlayedTime[playerName] = needTime
 
         } else if (playedTime >= needTime) {
@@ -63,8 +40,12 @@ class EventHandler(
     fun onChat(event: AsyncChatEvent) {
         val player = event.player
         val playerName = event.player.name
-        val playedTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
+        val playedTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20
         val yamlConfiguration = config.yamlConfiguration
+
+        if (player.hasPermission("ncr.bypass")) {
+            return
+        }
 
         if (NightChatRestricter.canChatPlayers.contains(playerName)) {
             return
@@ -77,7 +58,8 @@ class EventHandler(
                 return
             }
 
-            val needTimeMap = NightChatRestricter.needPlayedTime[playerName]?.let { formatTime(it) }
+            val needTimeMap =
+                NightChatRestricter.needPlayedTime[playerName]?.let { formatPlayedAndTotalTime(it, playedTime) }
             if (needTimeMap != null) {
                 for (string in yamlConfiguration.getStringList("messages.reduced")) {
                     player.sendColoredMessageWithPlaceholders(string, needTimeMap)

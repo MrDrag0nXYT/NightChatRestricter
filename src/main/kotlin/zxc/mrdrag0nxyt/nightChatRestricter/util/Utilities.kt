@@ -13,7 +13,7 @@ fun CommandSender.sendColoredMessage(string: String) {
     this.sendMessage(miniMessage.deserialize(string))
 }
 
-fun formatTime(timeInSeconds: Long): Map<String, Long> {
+fun formatTime(timeInSeconds: Int): Map<String, Int> {
     val hours = timeInSeconds / 3600
     val minutes = (timeInSeconds % 3600) / 60
     val seconds = timeInSeconds % 60
@@ -21,7 +21,14 @@ fun formatTime(timeInSeconds: Long): Map<String, Long> {
     return mapOf("hours" to hours, "minutes" to minutes, "seconds" to seconds)
 }
 
-fun CommandSender.sendColoredMessageWithPlaceholders(string: String, values: Map<String, Long>) {
+fun formatPlayedAndTotalTime(needTimeSeconds: Int, playedTimeSeconds: Int): Map<String, Int> {
+    val needTimeMap = formatTime(needTimeSeconds)
+    val playedTimeMap = formatTime(playedTimeSeconds).mapKeys { (key, _) -> "played_$key" }
+
+    return needTimeMap + playedTimeMap
+}
+
+fun CommandSender.sendColoredMessageWithPlaceholders(string: String, values: Map<String, Int>) {
     var result = string
     values.forEach { (key, value) ->
         result = result.replace("%$key%", value.toString())

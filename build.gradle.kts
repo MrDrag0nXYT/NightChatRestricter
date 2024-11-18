@@ -21,8 +21,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
-
-    implementation("com.zaxxer:HikariCP:6.2.0")
 }
 
 val targetJavaVersion = 17
