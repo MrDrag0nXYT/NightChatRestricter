@@ -1,0 +1,11 @@
+need-time: 600 # in seconds; 600 = 10 minutes
+
+messages:
+  # Available placeholders - %hours% %minutes% %seconds%
+  reduced:
+    - "<#fcfcfc>Чтобы писать в чат, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>!"
+
+  no-permission: "<#dc143c>У вас недостаточно прав для выполнения этого действия!"
+  command:
+    usage: "<#fffafa><#a880ff>NightChatRestricter</#a880ff> - Использование: <#a880ff><click:suggest_command:'/nightchatrestricter reload'>/nightchatrestricter reload</click></#a880ff>"
+    reloaded: "<#00ff7f>NightChatRestricter успешно перезагружен!"

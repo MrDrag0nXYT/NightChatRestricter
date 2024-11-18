@@ -1,0 +1,34 @@
+name: NightChatRestricter
+version: ${version}
+main: zxc.mrdrag0nxyt.nightChatRestricter.NightChatRestricter
+api-version: '1.18'
+authors: [ MrDrag0nXYT (drakoshaslv) ]
+website: https://drakoshaslv.ru
+
+commands:
+  nightchatrestricter:
+    aliases:
+      - ncr
+    permission: ncr.command
+
+permissions:
+  ncr.bypass:
+    default: op
+
+  ncr.command:
+    default: op
+
+  ncr.command.reload:
+    default: op
+
+  ncr.command.*:
+    default: op
+    children:
+      ncr.command: true
+      ncr.command.reload: true
+
+  ncr.*:
+    default: op
+    children:
+      ncr.bypass: true
+      ncr.command.*: true
