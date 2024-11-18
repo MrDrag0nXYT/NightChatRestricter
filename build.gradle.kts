@@ -21,6 +21,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
+
+    implementation("org.bstats:bstats-bukkit:3.0.2")
 }
 
 val targetJavaVersion = 17
@@ -39,4 +41,8 @@ tasks.processResources {
     filesMatching("plugin.yml") {
         expand(props)
     }
+}
+
+tasks.shadowJar {
+    relocate("org.bstats", "zxc.mrdrag0nxyt.org.bstats")
 }

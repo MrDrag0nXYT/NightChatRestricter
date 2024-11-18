@@ -11,14 +11,23 @@
 #                                      Source code: https://github.com/MrDrag0nXYT/NightChatRestricter
 #
 
+# Enable BStats metrics? You can see it here: https://bstats.org/plugin/bukkit/NightChatRestricter/23925
+enable-metrics: true
+
 need-time: 600 # in seconds; 600 = 10 minutes
+
+# List of commands, that can not be used if played time less than needed
+blocked-commands:
+  - ah
 
 messages:
   # Available placeholders - %hours% %minutes% %seconds%
-  reduced:
+  reduced-chat:
     - "<#fcfcfc>Чтобы писать в чат, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>"
+  reduced-command:
+    - "<#fcfcfc>Чтобы использовать эту команду, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>"
 
   no-permission: "<#dc143c>У вас недостаточно прав для выполнения этого действия!"
   command:
-    usage: "<#fffafa><#a880ff>NightChatRestricter</#a880ff> - Использование: <#a880ff><click:suggest_command:'/nightchatrestricter reload'>/nightchatrestricter reload</click></#a880ff>"
+    usage: "<#fcfcfc><#a880ff>NightChatRestricter</#a880ff> - Использование: <#a880ff><click:suggest_command:'/nightchatrestricter reload'>/nightchatrestricter reload</click></#a880ff>"
     reloaded: "<#00ff7f>NightChatRestricter успешно перезагружен!"

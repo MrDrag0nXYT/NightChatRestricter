@@ -12,12 +12,19 @@ commands:
     permission: ncr.command
 
 permissions:
+  ncr.bypass.chat:
+    default: op
+  ncr.bypass.command:
+    default: op
+
   ncr.bypass:
     default: op
+    children:
+      ncr.bypass.chat: true
+      ncr.bypass.command: true
 
   ncr.command:
     default: op
-
   ncr.command.reload:
     default: op
 

@@ -32,7 +32,17 @@ class NightChatRestricterCommand(
             return false
         }
 
-        when (strings?.get(0)?.lowercase()) {
+        if (strings?.size!! < 1) {
+            commandSender.sendColoredMessage(
+                yamlConfiguration.getString(
+                    "messages.command.usage",
+                    "<#fffafa><#a880ff>NightChatRestricter</#a880ff> - Использование: <#a880ff><click:suggest_command:'/nightchatrestricter reload'>/nightchatrestricter reload</click></#a880ff>"
+                )!!
+            )
+            return false
+        }
+
+        when (strings[0].lowercase()) {
             "reload" -> {
                 plugin.reload()
                 commandSender.sendColoredMessage(
