@@ -6,9 +6,9 @@ authors: [ MrDrag0nXYT (drakoshaslv) ]
 website: https://drakoshaslv.ru
 
 commands:
-  nightchatrestricter:
+  reloadnightchatrestricter:
     aliases:
-      - ncr
+      - reloadncr
     permission: ncr.command
 
 permissions:
@@ -23,19 +23,11 @@ permissions:
       ncr.bypass.chat: true
       ncr.bypass.command: true
 
-  ncr.command:
+  ncr.reload:
     default: op
-  ncr.command.reload:
-    default: op
-
-  ncr.command.*:
-    default: op
-    children:
-      ncr.command: true
-      ncr.command.reload: true
 
   ncr.*:
     default: op
     children:
       ncr.bypass: true
-      ncr.command.*: true
+      ncr.reload: true

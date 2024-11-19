@@ -21,15 +21,12 @@
 
 # ⚡ Команды и права
 
-## /nightchatrestricter
+## /reloadnightchatrestricter
 
 > [!TIP]
-> Сокращённый вариант: **/ncr**
+> Сокращённый вариант: **/reloadncr**
 
-### Subcommands:
-
-- /nightdart reload
-    - Право: `ncr.command.reload`
+- Право: `ncr.reload`
 
 ### Право для обхода: `ncr.bypass`
 

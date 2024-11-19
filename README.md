@@ -20,15 +20,12 @@
 
 # ⚡ Commands and permissions
 
-## /nightchatrestricter
+## /reloadnightchatrestricter
 
 > [!TIP]
-> Alias: **/ncr**
+> Alias: **/reloadncr**
 
-### Subcommands:
-
-- /nightdart reload
-    - Permission: `ncr.command.reload`
+- Permission: `ncr.reload`
 
 ### Permission for bypass: `ncr.bypass`
 
