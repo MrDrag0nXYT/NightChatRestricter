@@ -16,7 +16,7 @@ class Config(
         private set
     var needTime: Int = 600
         private set
-    var blockedCommands: List<String> = listOf()
+    var blockedCommands: HashSet<String> = hashSetOf()
         private set
 
     var reducedChatMessage: List<String> = listOf()
@@ -62,7 +62,7 @@ class Config(
     private fun loadValues() {
         enableMetrics = yamlConfiguration.getBoolean("enable-metrics", true)
         needTime = yamlConfiguration.getInt("need-time", 600)
-        blockedCommands = yamlConfiguration.getStringList("blocked-commands")
+        blockedCommands = HashSet(yamlConfiguration.getStringList("blocked-commands"))
 
         reducedChatMessage = yamlConfiguration.getStringList("messages.reduced-chat").ifEmpty {
             listOf("<#fcfcfc>Чтобы писать в чат, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>")
