@@ -9,73 +9,75 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import zxc.mrdrag0nxyt.nightChatRestricter.NightChatRestricter
 import zxc.mrdrag0nxyt.nightChatRestricter.config.Config
+import zxc.mrdrag0nxyt.nightChatRestricter.util.CanChatPlayers
 import zxc.mrdrag0nxyt.nightChatRestricter.util.formatPlayedAndTotalTime
 import zxc.mrdrag0nxyt.nightChatRestricter.util.sendColoredMessageWithPlaceholders
 
 class EventHandler(
+    private val canChatPlayers: CanChatPlayers,
     private val config: Config
 ) : Listener {
 
     @EventHandler
     fun onPlayerJoinEvent(event: PlayerJoinEvent) {
-        val yamlConfiguration = config.yamlConfiguration
-
         val player = event.player
-        val playerName = player.name
+        val playerUUID = player.uniqueId
         val playedTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20
-        val needTime = yamlConfiguration.getInt("need-time", 600)
+        val needTime = config.needTime
 
         if (playedTime >= needTime) {
-            NightChatRestricter.canChatPlayers.add(playerName)
+            canChatPlayers.add(playerUUID)
         }
     }
 
     @EventHandler
     fun onPlayerQuitEvent(event: PlayerQuitEvent) {
-        val playerName = event.player.name
-        NightChatRestricter.canChatPlayers.remove(playerName)
+        val playerUUID = event.player.uniqueId
+        canChatPlayers.remove(playerUUID)
     }
 
     @EventHandler
     fun onChat(event: AsyncChatEvent) {
-        reduce(event.player, "chat", event)
+        reduce(event.player, EventType.CHAT, event)
     }
 
     @EventHandler
     fun onCommand(event: PlayerCommandPreprocessEvent) {
-        if (NightChatRestricter.blockedCommands.contains(event.message.substring(1))) {
-            reduce(event.player, "command", event)
+        if (config.blockedCommands.contains(event.message.substring(1))) {
+            reduce(event.player, EventType.COMMAND, event)
         }
     }
 
 
-    private fun reduce(player: Player, messageType: String, event: Cancellable) {
-        val yamlConfiguration = config.yamlConfiguration
-
-        val playerName = player.name
+    private fun reduce(player: Player, eventType: EventType, event: Cancellable) {
+        val playerUUID = player.uniqueId
         val playedTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20
-        val needTime = yamlConfiguration.getInt("need-time", 600)
+        val needTime = config.needTime
 
-        if (NightChatRestricter.canChatPlayers.contains(playerName)) {
+        if (canChatPlayers.isCanChat(playerUUID)) {
             return
         }
 
-        if (player.hasPermission("ncr.bypass") || player.hasPermission("ncr.bypass.$messageType")) {
+        if (player.hasPermission("ncr.bypass") || player.hasPermission("ncr.bypass.${eventType.eventName}")) {
             return
         }
 
         if (playedTime >= needTime) {
-            NightChatRestricter.canChatPlayers.add(playerName)
+            canChatPlayers.add(playerUUID)
             return
         }
 
         val needTimeMap = formatPlayedAndTotalTime(needTime, playedTime)
-        for (string in yamlConfiguration.getStringList("messages.reduced-${messageType}")) {
-            player.sendColoredMessageWithPlaceholders(string, needTimeMap)
-        }
+        val strings = if (eventType == EventType.CHAT) config.reducedChatMessage else config.reducedCommandMessage
+        strings.forEach { player.sendColoredMessageWithPlaceholders(it, needTimeMap) }
+
         event.isCancelled = true
+    }
+
+    private enum class EventType(val eventName: String) {
+        CHAT("chat"),
+        COMMAND("command")
     }
 
 }

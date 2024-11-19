@@ -28,6 +28,6 @@ messages:
     - "<#fcfcfc>Чтобы использовать эту команду, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>"
 
   no-permission: "<#dc143c>У вас недостаточно прав для выполнения этого действия!"
+
   command:
-    usage: "<#fcfcfc><#a880ff>NightChatRestricter</#a880ff> - Использование: <#a880ff><click:suggest_command:'/nightchatrestricter reload'>/nightchatrestricter reload</click></#a880ff>"
     reloaded: "<#00ff7f>NightChatRestricter успешно перезагружен!"

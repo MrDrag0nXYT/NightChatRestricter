@@ -3,29 +3,24 @@ package zxc.mrdrag0nxyt.nightChatRestricter
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
-import zxc.mrdrag0nxyt.nightChatRestricter.command.NightChatRestricterCommand
+import zxc.mrdrag0nxyt.nightChatRestricter.command.ReloadCommand
 import zxc.mrdrag0nxyt.nightChatRestricter.config.Config
 import zxc.mrdrag0nxyt.nightChatRestricter.handler.EventHandler
+import zxc.mrdrag0nxyt.nightChatRestricter.util.CanChatPlayers
 import zxc.mrdrag0nxyt.nightChatRestricter.util.sendColoredMessage
 
 class NightChatRestricter : JavaPlugin() {
 
-    companion object {
-        var blockedCommands = ArrayList<String>()
-        var canChatPlayers = ArrayList<String>()
-    }
-
     private val config = Config(this)
+    private val canChatPlayers = CanChatPlayers()
 
     override fun onEnable() {
-        getCommand("nightchatrestricter")?.setExecutor(NightChatRestricterCommand(this, config))
-        server.pluginManager.registerEvents(EventHandler(config), this)
+        getCommand("reloadnightchatrestricter")?.setExecutor(ReloadCommand(this, config))
+        server.pluginManager.registerEvents(EventHandler(canChatPlayers, config), this)
 
-        if (config.yamlConfiguration.getBoolean("enable-metrics", true)) {
+        if (config.enableMetrics) {
             val metrics: Metrics = Metrics(this, 23925)
         }
-
-        blockedCommands = config.yamlConfiguration.getStringList("blocked-commands") as ArrayList<String>
 
         showEnableTitle(true)
     }
@@ -36,7 +31,6 @@ class NightChatRestricter : JavaPlugin() {
 
     fun reload() {
         config.reload()
-        blockedCommands = config.yamlConfiguration.getStringList("blocked-commands") as ArrayList<String>
     }
 
 
