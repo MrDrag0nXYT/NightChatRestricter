@@ -19,6 +19,14 @@ class Config(
     var blockedCommands: HashSet<String> = hashSetOf()
         private set
 
+    var useUUID: Boolean = true
+        private set
+
+    var databaseType: DatabaseType = DatabaseType.SQLITE
+        private set
+    var databaseConfig: DatabaseConfigEntity? = null
+        private set
+
     var reducedChatMessage: List<String> = listOf()
         private set
     var reducedCommandMessage: List<String> = listOf()
@@ -63,6 +71,18 @@ class Config(
         enableMetrics = yamlConfiguration.getBoolean("enable-metrics", true)
         needTime = yamlConfiguration.getInt("need-time", 600)
         blockedCommands = HashSet(yamlConfiguration.getStringList("blocked-commands"))
+        useUUID = yamlConfiguration.getBoolean("use-uuid", true)
+
+        databaseType = DatabaseType.fromStringType(yamlConfiguration.getString("database.type", "SQLITE")!!)
+        if (databaseType != DatabaseType.SQLITE) {
+            databaseConfig = DatabaseConfigEntity(
+                host = yamlConfiguration.getString("database.host", "localhost")!!,
+                port = yamlConfiguration.getInt("database.port", 3306),
+                username = yamlConfiguration.getString("database.username", "notavailable")!!,
+                password = yamlConfiguration.getString("database.password", "notavailable")!!,
+                database = yamlConfiguration.getString("database.database", "ncr")!!,
+            )
+        }
 
         reducedChatMessage = yamlConfiguration.getStringList("messages.reduced-chat").ifEmpty {
             listOf("<#fcfcfc>Чтобы писать в чат, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>")

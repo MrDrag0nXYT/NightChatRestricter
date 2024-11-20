@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "zxc.mrdrag0nxyt"
-version = "1.0.1.1"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -21,6 +21,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
+
+    implementation("com.zaxxer:HikariCP:6.2.0")
+    implementation("org.xerial:sqlite-jdbc:3.47.0.0")
 
     implementation("org.bstats:bstats-bukkit:3.0.2")
 }
