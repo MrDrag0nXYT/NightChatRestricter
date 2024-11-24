@@ -4,13 +4,20 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 import zxc.mrdrag0nxyt.nightChatRestricter.util.Utilities.miniMessage
 
-
 object Utilities {
     val miniMessage = MiniMessage.miniMessage()
 }
 
 fun CommandSender.sendColoredMessage(string: String) {
     this.sendMessage(miniMessage.deserialize(string))
+}
+
+fun CommandSender.sendColoredMessageWithPlaceholders(string: String, values: Map<String, Int>) {
+    var result = string
+    values.forEach { (key, value) ->
+        result = result.replace("%$key%", value.toString())
+    }
+    this.sendMessage(miniMessage.deserialize(result))
 }
 
 fun formatTime(timeInSeconds: Int): Map<String, Int> {
@@ -26,12 +33,4 @@ fun formatPlayedAndTotalTime(needTimeSeconds: Int, playedTimeSeconds: Int): Map<
     val playedTimeMap = formatTime(playedTimeSeconds).mapKeys { (key, _) -> "played_$key" }
 
     return needTimeMap + playedTimeMap
-}
-
-fun CommandSender.sendColoredMessageWithPlaceholders(string: String, values: Map<String, Int>) {
-    var result = string
-    values.forEach { (key, value) ->
-        result = result.replace("%$key%", value.toString())
-    }
-    this.sendMessage(miniMessage.deserialize(result))
 }

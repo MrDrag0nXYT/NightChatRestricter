@@ -25,7 +25,7 @@ class EventHandler(
     private val databaseManager: DatabaseManager
 ) : Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onPlayerJoinEvent(event: PlayerJoinEvent) {
         val player = event.player
         val playerUUID = player.uniqueId
@@ -41,20 +41,23 @@ class EventHandler(
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onPlayerQuitEvent(event: PlayerQuitEvent) {
         val playerUUID = event.player.uniqueId
         canChatPlayers.remove(playerUUID)
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onChat(event: AsyncChatEvent) {
         reduce(event.player, EventType.CHAT, event)
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onCommand(event: PlayerCommandPreprocessEvent) {
-        if (config.blockedCommands.contains(event.message.substring(1))) {
+        val commandName = event.message
+            .split(" ")[0].substring(1)
+
+        if (config.blockedCommands.contains(commandName)) {
             reduce(event.player, EventType.COMMAND, event)
         }
     }

@@ -59,41 +59,80 @@ class Config(
         }
     }
 
-//    fun save() {
-//        try {
-//            yamlConfiguration.save(file)
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//    }
+    fun save() {
+        try {
+            yamlConfiguration.save(file)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     private fun loadValues() {
-        enableMetrics = yamlConfiguration.getBoolean("enable-metrics", true)
-        needTime = yamlConfiguration.getInt("need-time", 600)
-        blockedCommands = HashSet(yamlConfiguration.getStringList("blocked-commands"))
-        useUUID = yamlConfiguration.getBoolean("use-uuid", true)
+        enableMetrics = checkConfigValue("enable-metrics", yamlConfiguration.getBoolean("enable-metrics", true))
+        needTime = checkConfigValue("need-time", yamlConfiguration.getInt("need-time", 600))
+        blockedCommands =
+            checkConfigValue("blocked-commands", HashSet(yamlConfiguration.getStringList("blocked-commands")))
+        useUUID = checkConfigValue("use-uuid", yamlConfiguration.getBoolean("use-uuid", true))
 
-        databaseType = DatabaseType.fromStringType(yamlConfiguration.getString("database.type", "SQLITE")!!)
+        databaseType = DatabaseType.fromStringType(
+            checkConfigValue("database.type", yamlConfiguration.getString("database.type", "SQLITE")!!)
+        )
         if (databaseType != DatabaseType.SQLITE) {
             databaseConfig = DatabaseConfigEntity(
-                host = yamlConfiguration.getString("database.host", "localhost")!!,
-                port = yamlConfiguration.getInt("database.port", 3306),
-                username = yamlConfiguration.getString("database.username", "notavailable")!!,
-                password = yamlConfiguration.getString("database.password", "notavailable")!!,
-                database = yamlConfiguration.getString("database.database", "ncr")!!,
+                host = checkConfigValue(
+                    "database.host",
+                    yamlConfiguration.getString("database.host", "localhost")!!
+                ),
+                port = checkConfigValue(
+                    "database.port",
+                    yamlConfiguration.getInt("database.port", 3306)
+                ),
+                username = checkConfigValue(
+                    "database.username",
+                    yamlConfiguration.getString("database.username", "notavailable")!!
+                ),
+                password = checkConfigValue(
+                    "database.password",
+                    yamlConfiguration.getString("database.password", "notavailable")!!
+                ),
+                database = checkConfigValue(
+                    "database.name",
+                    yamlConfiguration.getString("database.database", "ncr")!!
+                ),
             )
         }
 
-        reducedChatMessage = yamlConfiguration.getStringList("messages.reduced-chat").ifEmpty {
-            listOf("<#fcfcfc>Чтобы писать в чат, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>")
+        reducedChatMessage = checkConfigValue(
+            "messages.reduced-chat",
+            yamlConfiguration.getStringList("messages.reduced-chat").ifEmpty {
+                listOf("<#fcfcfc>Чтобы писать в чат, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>")
+            }
+        )
+        reducedCommandMessage = checkConfigValue(
+            "messages.reduced-command",
+            yamlConfiguration.getStringList("messages.reduced-command").ifEmpty {
+                listOf("<#fcfcfc>Чтобы использовать эту команду, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>")
+            }
+        )
+        noPermissionMessage = checkConfigValue(
+            "messages.no-permission",
+            yamlConfiguration.getString("messages.no-permission")
+                ?: "<#dc143c>У вас недостаточно прав для выполнения этого действия!"
+        )
+        reloadedMessage = checkConfigValue(
+            "messages.command.reloaded",
+            yamlConfiguration.getString("messages.command.reloaded")
+                ?: "<#00ff7f>NightChatRestricter успешно перезагружен!"
+        )
+
+        save()
+    }
+
+    private fun <T> checkConfigValue(key: String, value: T): T {
+        if (!yamlConfiguration.contains(key)) {
+            yamlConfiguration.set(key, value)
         }
-        reducedCommandMessage = yamlConfiguration.getStringList("messages.reduced-command").ifEmpty {
-            listOf("<#fcfcfc>Чтобы использовать эту команду, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>")
-        }
-        noPermissionMessage = yamlConfiguration.getString("messages.no-permission")
-            ?: "<#dc143c>У вас недостаточно прав для выполнения этого действия!"
-        reloadedMessage = yamlConfiguration.getString("messages.command.reloaded")
-            ?: "<#00ff7f>NightChatRestricter успешно перезагружен!"
+        return value
     }
 
 }
