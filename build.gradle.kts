@@ -1,10 +1,10 @@
 plugins {
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.1.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "zxc.mrdrag0nxyt"
-version = "1.1.1"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -18,15 +18,10 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
+    compileOnly("net.luckperms:api:5.4")
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
-
-//    compileOnly("com.zaxxer:HikariCP:6.2.0")
-//    compileOnly("org.xerial:sqlite-jdbc:3.47.0.0")
-
-    implementation("com.zaxxer:HikariCP:6.2.0")
-    implementation("org.xerial:sqlite-jdbc:3.47.0.0")
 
     implementation("org.bstats:bstats-bukkit:3.0.2")
 }

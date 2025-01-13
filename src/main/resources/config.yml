@@ -16,21 +16,9 @@ enable-metrics: true
 
 need-time: 600 # in seconds; 600 = 10 minutes
 
-# Disable if your server allow to play offline players
-use-uuid: false
-
 # List of commands, that can not be used if played time less than needed
 blocked-commands:
   - ah
-
-database:
-  type: "SQLITE" # can be "SQLITE" or "MYSQL"
-
-  host: localhost
-  port: 3306
-  database: 'ncr'
-  username: 'admin12345'
-  password: 'admin12345'
 
 messages:
   # Available placeholders - %hours% %minutes% %seconds%
