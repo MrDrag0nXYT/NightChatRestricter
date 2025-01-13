@@ -5,7 +5,6 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import zxc.mrdrag0nxyt.nightChatRestricter.command.ReloadCommand
 import zxc.mrdrag0nxyt.nightChatRestricter.config.Config
-import zxc.mrdrag0nxyt.nightChatRestricter.database.DatabaseManager
 import zxc.mrdrag0nxyt.nightChatRestricter.handler.EventHandler
 import zxc.mrdrag0nxyt.nightChatRestricter.util.CanChatPlayers
 import zxc.mrdrag0nxyt.nightChatRestricter.util.sendColoredMessage
@@ -14,32 +13,22 @@ class NightChatRestricter : JavaPlugin() {
 
     private val config = Config(this)
     private val canChatPlayers = CanChatPlayers()
-    private val databaseManager = DatabaseManager(this, config.databaseType, config.databaseConfig)
 
     override fun onEnable() {
         getCommand("reloadnightchatrestricter")?.setExecutor(ReloadCommand(this, config))
-        server.pluginManager.registerEvents(EventHandler(this, canChatPlayers, config, databaseManager), this)
+        server.pluginManager.registerEvents(EventHandler(canChatPlayers, config), this)
 
         if (config.enableMetrics) Metrics(this, 23925)
-
-        try {
-            val connection = databaseManager.getConnection()
-            databaseManager.databaseWorker!!.initTable(connection!!)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
 
         showEnableTitle(true)
     }
 
     override fun onDisable() {
-        databaseManager.closeConnection()
         showEnableTitle(false)
     }
 
     fun reload() {
         config.reload()
-        databaseManager.updateConnection(config.databaseType, config.databaseConfig)
     }
 
 

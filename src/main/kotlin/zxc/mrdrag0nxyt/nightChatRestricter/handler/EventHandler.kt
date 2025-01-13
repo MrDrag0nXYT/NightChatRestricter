@@ -1,7 +1,8 @@
 package zxc.mrdrag0nxyt.nightChatRestricter.handler
 
 import io.papermc.paper.event.player.AsyncChatEvent
-import org.bukkit.Bukkit
+import net.luckperms.api.LuckPermsProvider
+import net.luckperms.api.node.types.PermissionNode
 import org.bukkit.Statistic
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
@@ -10,34 +11,29 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import zxc.mrdrag0nxyt.nightChatRestricter.NightChatRestricter
 import zxc.mrdrag0nxyt.nightChatRestricter.config.Config
-import zxc.mrdrag0nxyt.nightChatRestricter.database.DatabaseManager
 import zxc.mrdrag0nxyt.nightChatRestricter.util.CanChatPlayers
 import zxc.mrdrag0nxyt.nightChatRestricter.util.formatPlayedAndTotalTime
 import zxc.mrdrag0nxyt.nightChatRestricter.util.sendColoredMessageWithPlaceholders
-import java.util.*
 
 class EventHandler(
-    private val plugin: NightChatRestricter,
     private val canChatPlayers: CanChatPlayers,
-    private val config: Config,
-    private val databaseManager: DatabaseManager
+    private val config: Config
 ) : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerJoinEvent(event: PlayerJoinEvent) {
         val player = event.player
-        val playerUUID = player.uniqueId
-        val playerName = player.name
         val playedTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20
         val needTime = config.needTime
 
-        isPlayerExistInDatabase(playerUUID, playerName)
+        if (player.hasPermission("ncr.bypass")) {
+            canChatPlayers.add(player.uniqueId)
+            return
+        }
 
-        if (playedTime >= needTime || player.hasPermission("ncr.bypass")) {
-            addPlayerToDatabase(player)
-            canChatPlayers.add(playerUUID)
+        if (playedTime >= needTime) {
+            allowChatForPlayer(player)
         }
     }
 
@@ -68,9 +64,13 @@ class EventHandler(
         val playedTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20
         val needTime = config.needTime
 
-        if (playedTime >= needTime || player.hasPermission("ncr.bypass")) {
+        if (player.hasPermission("ncr.bypass")) {
             canChatPlayers.add(playerUUID)
-            addPlayerToDatabase(player)
+            return
+        }
+
+        if (playedTime >= needTime) {
+            allowChatForPlayer(player)
             return
         }
 
@@ -85,39 +85,21 @@ class EventHandler(
         event.isCancelled = true
     }
 
-    private fun isPlayerExistInDatabase(playerUUID: UUID, playerName: String) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
-            try {
-                val connection = databaseManager.getConnection()
-                val databaseWorker = databaseManager.databaseWorker
+    private fun allowChatForPlayer(player: Player) {
+        val luckPerms = LuckPermsProvider.get()
 
-                val isPlayerFound = if (config.useUUID) {
-                    databaseWorker?.isPlayerExistByUUID(connection!!, playerUUID.toString())
-                } else {
-                    databaseWorker?.isPlayerExistByName(connection!!, playerName)
-                }
+        luckPerms.userManager.loadUser(player.uniqueId).thenAccept { user ->
+            if (user == null) return@thenAccept
 
-                if (isPlayerFound == true) {
-                    canChatPlayers.add(playerUUID)
-                }
+            val permissionNode = PermissionNode.builder("ncr.bypass")
+                .value(true)
+                .build()
 
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        })
-    }
+            user.data().add(permissionNode)
+            luckPerms.userManager.saveUser(user)
+        }
 
-    private fun addPlayerToDatabase(player: Player) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
-            try {
-                val connection = databaseManager.getConnection()
-                val databaseWorker = databaseManager.databaseWorker
-                databaseWorker?.addPlayer(connection!!, player)
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        })
+        canChatPlayers.add(player.uniqueId)
     }
 
 

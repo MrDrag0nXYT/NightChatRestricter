@@ -4,6 +4,10 @@ main: zxc.mrdrag0nxyt.nightChatRestricter.NightChatRestricter
 api-version: '1.18'
 authors: [ MrDrag0nXYT (drakoshaslv) ]
 website: https://drakoshaslv.ru
+depend: [ "LuckPerms" ]
+
+libraries:
+  - "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.0"
 
 commands:
   reloadnightchatrestricter:

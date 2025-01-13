@@ -19,14 +19,6 @@ class Config(
     var blockedCommands: HashSet<String> = hashSetOf()
         private set
 
-    var useUUID: Boolean = true
-        private set
-
-    var databaseType: DatabaseType = DatabaseType.SQLITE
-        private set
-    var databaseConfig: DatabaseConfigEntity? = null
-        private set
-
     var reducedChatMessage: List<String> = listOf()
         private set
     var reducedCommandMessage: List<String> = listOf()
@@ -72,35 +64,6 @@ class Config(
         needTime = checkConfigValue("need-time", yamlConfiguration.getInt("need-time", 600))
         blockedCommands =
             checkConfigValue("blocked-commands", HashSet(yamlConfiguration.getStringList("blocked-commands")))
-        useUUID = checkConfigValue("use-uuid", yamlConfiguration.getBoolean("use-uuid", true))
-
-        databaseType = DatabaseType.fromStringType(
-            checkConfigValue("database.type", yamlConfiguration.getString("database.type", "SQLITE")!!)
-        )
-        if (databaseType != DatabaseType.SQLITE) {
-            databaseConfig = DatabaseConfigEntity(
-                host = checkConfigValue(
-                    "database.host",
-                    yamlConfiguration.getString("database.host", "localhost")!!
-                ),
-                port = checkConfigValue(
-                    "database.port",
-                    yamlConfiguration.getInt("database.port", 3306)
-                ),
-                username = checkConfigValue(
-                    "database.username",
-                    yamlConfiguration.getString("database.username", "notavailable")!!
-                ),
-                password = checkConfigValue(
-                    "database.password",
-                    yamlConfiguration.getString("database.password", "notavailable")!!
-                ),
-                database = checkConfigValue(
-                    "database.name",
-                    yamlConfiguration.getString("database.database", "ncr")!!
-                ),
-            )
-        }
 
         reducedChatMessage = checkConfigValue(
             "messages.reduced-chat",

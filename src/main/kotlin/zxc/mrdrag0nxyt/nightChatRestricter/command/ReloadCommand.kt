@@ -35,7 +35,7 @@ class ReloadCommand(
         command: Command,
         str: String,
         strings: Array<String>?
-    ): List<String>? {
+    ): List<String> {
         return listOf()
     }
 
