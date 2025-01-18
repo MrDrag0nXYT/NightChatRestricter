@@ -1,6 +1,9 @@
 package zxc.mrdrag0nxyt.nightChatRestricter.handler
 
 import io.papermc.paper.event.player.AsyncChatEvent
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.title.Title
+import net.kyori.adventure.title.TitlePart
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.PermissionNode
 import org.bukkit.Statistic
@@ -80,7 +83,9 @@ class EventHandler(
 
         val needTimeMap = formatPlayedAndTotalTime(needTime, playedTime)
         val strings = if (eventType == EventType.CHAT) config.reducedChatMessage else config.reducedCommandMessage
+
         strings.forEach { player.sendColoredMessageWithPlaceholders(it, needTimeMap) }
+        sendRestrictionTitle(player)
 
         event.isCancelled = true
     }
@@ -106,6 +111,25 @@ class EventHandler(
     private enum class EventType(val eventName: String) {
         CHAT("chat"),
         COMMAND("command")
+    }
+
+    private fun sendRestrictionTitle(player: Player) {
+        if (!config.isTitleEnabled) return
+
+        val title = MiniMessage.miniMessage().deserialize(config.title)
+        val subtitle = MiniMessage.miniMessage().deserialize(config.subtitle)
+        val actionbar = MiniMessage.miniMessage().deserialize(config.actionbar)
+
+        player.sendTitlePart(TitlePart.TITLE, title)
+        player.sendTitlePart(TitlePart.SUBTITLE, subtitle)
+        player.sendTitlePart(
+            TitlePart.TIMES, Title.Times.times(
+                config.titleFadeIn,
+                config.titleStay,
+                config.titleFadeOut,
+            )
+        )
+        player.sendActionBar(actionbar)
     }
 
 }

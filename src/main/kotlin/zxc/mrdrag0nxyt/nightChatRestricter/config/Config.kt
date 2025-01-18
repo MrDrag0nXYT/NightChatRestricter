@@ -1,8 +1,10 @@
 package zxc.mrdrag0nxyt.nightChatRestricter.config
 
+import net.kyori.adventure.util.Ticks
 import org.bukkit.configuration.file.YamlConfiguration
 import zxc.mrdrag0nxyt.nightChatRestricter.NightChatRestricter
 import java.io.File
+import java.time.Duration
 
 class Config(
     private val plugin: NightChatRestricter
@@ -17,6 +19,21 @@ class Config(
     var needTime: Int = 600
         private set
     var blockedCommands: HashSet<String> = hashSetOf()
+        private set
+
+    var isTitleEnabled = false
+        private set
+    var title = "<#a880ff>Не-а!"
+        private set
+    var subtitle = "<#fcfcfc>Ваш чат ещё <#dc143c>заблокирован</#dc143c>"
+        private set
+    var actionbar = ""
+        private set
+    var titleFadeIn: Duration = Ticks.duration(10)
+        private set
+    var titleStay: Duration = Ticks.duration(70)
+        private set
+    var titleFadeOut: Duration = Ticks.duration(20)
         private set
 
     var reducedChatMessage: List<String> = listOf()
@@ -63,7 +80,15 @@ class Config(
         enableMetrics = checkConfigValue("enable-metrics", yamlConfiguration.getBoolean("enable-metrics", true))
         needTime = checkConfigValue("need-time", yamlConfiguration.getInt("need-time", 600))
         blockedCommands =
-            checkConfigValue("blocked-commands", HashSet(yamlConfiguration.getStringList("blocked-commands")))
+            checkConfigValue("blocked-commands", yamlConfiguration.getStringList("blocked-commands")).toHashSet()
+
+        isTitleEnabled = checkConfigValue("title.enabled", isTitleEnabled)
+        title = checkConfigValue("title.title", title)
+        subtitle = checkConfigValue("title.subtitle", subtitle)
+        actionbar = checkConfigValue("title.actionbar", actionbar)
+        titleFadeIn = Ticks.duration(checkConfigValue("title.time.fade-in", 10))
+        titleFadeIn = Ticks.duration(checkConfigValue("title.time.stay", 70))
+        titleFadeOut = Ticks.duration(checkConfigValue("title.time.fade-out", 20))
 
         reducedChatMessage = checkConfigValue(
             "messages.reduced-chat",
@@ -92,10 +117,12 @@ class Config(
     }
 
     private fun <T> checkConfigValue(key: String, value: T): T {
-        if (!yamlConfiguration.contains(key)) {
+        return if (!yamlConfiguration.contains(key)) {
             yamlConfiguration.set(key, value)
+            value
+        } else {
+            yamlConfiguration.get(key) as T
         }
-        return value
     }
 
 }

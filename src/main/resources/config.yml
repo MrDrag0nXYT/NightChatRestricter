@@ -20,6 +20,16 @@ need-time: 600 # in seconds; 600 = 10 minutes
 blocked-commands:
   - ah
 
+title:
+  enabled: false
+  title: "<#a880ff>Не-а!"
+  subtitle: "<#fcfcfc>Ваш чат ещё <#dc143c>заблокирован</#dc143c>"
+  actionbar: ""
+  time:
+    fade-in: 10
+    stay: 70
+    fade-out: 20
+
 messages:
   # Available placeholders - %hours% %minutes% %seconds%
   reduced-chat:
