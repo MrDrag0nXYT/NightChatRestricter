@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "zxc.mrdrag0nxyt"
-version = "1.2.1"
+version = "1.2.2"
 
 repositories {
     mavenCentral()
@@ -22,6 +22,7 @@ dependencies {
 
     compileOnly("net.luckperms:api:5.4")
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
+    compileOnly("net.kyori:adventure-text-serializer-legacy:4.17.0")
 
     implementation("org.bstats:bstats-bukkit:3.0.2")
 }
@@ -45,5 +46,6 @@ tasks.processResources {
 }
 
 tasks.shadowJar {
+    archiveClassifier.set("")
     relocate("org.bstats", "zxc.mrdrag0nxyt.org.bstats")
 }

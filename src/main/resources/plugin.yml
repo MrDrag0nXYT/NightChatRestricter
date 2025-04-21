@@ -8,6 +8,8 @@ depend: [ "LuckPerms" ]
 
 libraries:
   - "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.0"
+  - "net.kyori:adventure-api:4.17.0"
+  - "net.kyori:adventure-text-serializer-legacy:4.17.0"
 
 commands:
   reloadnightchatrestricter:

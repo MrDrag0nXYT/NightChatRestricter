@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import zxc.mrdrag0nxyt.nightChatRestricter.NightChatRestricter
 import zxc.mrdrag0nxyt.nightChatRestricter.config.Config
-import zxc.mrdrag0nxyt.nightChatRestricter.util.sendColoredMessage
 
 class ReloadCommand(
     private val plugin: NightChatRestricter,
@@ -20,12 +19,12 @@ class ReloadCommand(
         strings: Array<String>?
     ): Boolean {
         if (!commandSender.hasPermission("ncr.reload")) {
-            commandSender.sendColoredMessage(config.noPermissionMessage)
+            commandSender.sendMessage(config.noPermissionMessage)
             return false
         }
 
         plugin.reload()
-        commandSender.sendColoredMessage(config.reloadedMessage)
+        commandSender.sendMessage(config.reloadedMessage)
 
         return true
     }

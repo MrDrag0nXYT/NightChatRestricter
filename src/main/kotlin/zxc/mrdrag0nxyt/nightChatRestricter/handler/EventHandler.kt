@@ -116,9 +116,9 @@ class EventHandler(
     private fun sendRestrictionTitle(player: Player) {
         if (!config.isTitleEnabled) return
 
-        val title = MiniMessage.miniMessage().deserialize(config.title)
-        val subtitle = MiniMessage.miniMessage().deserialize(config.subtitle)
-        val actionbar = MiniMessage.miniMessage().deserialize(config.actionbar)
+        val title = config.title
+        val subtitle = config.subtitle
+        val actionbar = config.actionbar
 
         player.sendTitlePart(TitlePart.TITLE, title)
         player.sendTitlePart(TitlePart.SUBTITLE, subtitle)

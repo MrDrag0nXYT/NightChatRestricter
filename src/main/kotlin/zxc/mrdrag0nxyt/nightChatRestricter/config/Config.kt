@@ -1,5 +1,8 @@
 package zxc.mrdrag0nxyt.nightChatRestricter.config
 
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.util.Ticks
 import org.bukkit.configuration.file.YamlConfiguration
 import zxc.mrdrag0nxyt.nightChatRestricter.NightChatRestricter
@@ -23,11 +26,11 @@ class Config(
 
     var isTitleEnabled = false
         private set
-    var title = "<#a880ff>Не-а!"
+    var title = Component.empty().asComponent()
         private set
-    var subtitle = "<#fcfcfc>Ваш чат ещё <#dc143c>заблокирован</#dc143c>"
+    var subtitle = Component.empty().asComponent()
         private set
-    var actionbar = ""
+    var actionbar = Component.empty().asComponent()
         private set
     var titleFadeIn: Duration = Ticks.duration(10)
         private set
@@ -40,9 +43,9 @@ class Config(
         private set
     var reducedCommandMessage: List<String> = listOf()
         private set
-    var noPermissionMessage: String = ""
+    var noPermissionMessage = Component.empty().asComponent()
         private set
-    var reloadedMessage: String = ""
+    var reloadedMessage = Component.empty().asComponent()
         private set
 
     init {
@@ -82,36 +85,55 @@ class Config(
         blockedCommands =
             checkConfigValue("blocked-commands", yamlConfiguration.getStringList("blocked-commands")).toHashSet()
 
+        val miniMessage = MiniMessage.miniMessage()
+
         isTitleEnabled = checkConfigValue("title.enabled", isTitleEnabled)
-        title = checkConfigValue("title.title", title)
-        subtitle = checkConfigValue("title.subtitle", subtitle)
-        actionbar = checkConfigValue("title.actionbar", actionbar)
+
+        title = checkConfigValue("title.title", "<#a880ff>Не-а!")
+            .let { miniMessage.deserialize(it) }
+        subtitle = checkConfigValue("title.subtitle", "<#fcfcfc>Ваш чат ещё <#dc143c>заблокирован</#dc143c>")
+            .let { miniMessage.deserialize(it) }
+        actionbar = checkConfigValue("title.actionbar", "")
+            .let { miniMessage.deserialize(it) }
+
         titleFadeIn = Ticks.duration(checkConfigValue("title.time.fade-in", 10))
         titleFadeIn = Ticks.duration(checkConfigValue("title.time.stay", 70))
         titleFadeOut = Ticks.duration(checkConfigValue("title.time.fade-out", 20))
+
+        val legacyComponentSerializer = LegacyComponentSerializer.builder()
+            .hexColors()
+            .useUnusualXRepeatedCharacterHexFormat()
+            .build()
 
         reducedChatMessage = checkConfigValue(
             "messages.reduced-chat",
             yamlConfiguration.getStringList("messages.reduced-chat").ifEmpty {
                 listOf("<#fcfcfc>Чтобы писать в чат, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>")
             }
-        )
+        ).map { str ->
+            val component = miniMessage.deserialize(str)
+            legacyComponentSerializer.serialize(component)
+        }
+
         reducedCommandMessage = checkConfigValue(
             "messages.reduced-command",
             yamlConfiguration.getStringList("messages.reduced-command").ifEmpty {
                 listOf("<#fcfcfc>Чтобы использовать эту команду, необходимо наиграть <#a880ff>%minutes% минут</#a880ff>, вы наиграли <#a880ff>%played_minutes% минут %played_seconds% секунд</#a880ff>")
             }
-        )
+        ).map { str ->
+            val component = miniMessage.deserialize(str)
+            legacyComponentSerializer.serialize(component)
+        }
+
         noPermissionMessage = checkConfigValue(
             "messages.no-permission",
-            yamlConfiguration.getString("messages.no-permission")
-                ?: "<#dc143c>У вас недостаточно прав для выполнения этого действия!"
-        )
+            "<#dc143c>У вас недостаточно прав для выполнения этого действия!"
+        ).let { miniMessage.deserialize(it) }
+
         reloadedMessage = checkConfigValue(
             "messages.command.reloaded",
-            yamlConfiguration.getString("messages.command.reloaded")
-                ?: "<#00ff7f>NightChatRestricter успешно перезагружен!"
-        )
+            "<#00ff7f>NightChatRestricter успешно перезагружен!"
+        ).let { miniMessage.deserialize(it) }
 
         save()
     }

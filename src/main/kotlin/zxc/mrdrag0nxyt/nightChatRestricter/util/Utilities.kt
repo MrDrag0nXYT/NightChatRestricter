@@ -8,16 +8,14 @@ object Utilities {
     val miniMessage = MiniMessage.miniMessage()
 }
 
-fun CommandSender.sendColoredMessage(string: String) {
-    this.sendMessage(miniMessage.deserialize(string))
-}
-
 fun CommandSender.sendColoredMessageWithPlaceholders(string: String, values: Map<String, Int>) {
     var result = string
+
     values.forEach { (key, value) ->
         result = result.replace("%$key%", value.toString())
     }
-    this.sendMessage(miniMessage.deserialize(result))
+
+    this.sendMessage(result)
 }
 
 fun formatTime(timeInSeconds: Int): Map<String, Int> {
